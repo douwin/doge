@@ -102,6 +102,8 @@
 | `baseCoin` | String | 基础币 |
 | `beginTime` | String | 开始时间 |
 | `endTime` | String | 结束时间 |
+| `buyBeginTime` | String | 购买开始时间 |
+| `buyEndTime` | String | 购买结束时间 |
 | `openPrice` | String | 基准价 |
 | `closePrice` | String | 结束价(当前价) |
 | `startAdvanceMinutes` | Integer | 参与开始提前分钟数 |
@@ -124,7 +126,11 @@
 | 接口名称 | 查询所有期次 |
 | 请求地址 | `/v1/oracle/issue/list` |
 | 请求方式 | `GET` |
-| Token | 否 |
+| Token | 选填 |
+
+### 业务说明
+未登录或期次状态不是 `4` 时，`incomeAmount` 返回空。
+期次状态不是 `4` 时，`drawResult` 返回空。
 
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
@@ -145,6 +151,8 @@
 | `baseCoin` | String | 基础币 |
 | `beginTime` | String | 开始时间 |
 | `endTime` | String | 结束时间 |
+| `buyBeginTime` | String | 购买开始时间 |
+| `buyEndTime` | String | 购买结束时间 |
 | `openPrice` | String | 基准价 |
 | `closePrice` | String | 结束价(当前价) |
 | `startAdvanceMinutes` | Integer | 参与开始提前分钟数 |
@@ -152,8 +160,8 @@
 | `marketType` | Integer | 市场类型 |
 | `status` | Integer | 状态：`1=进行中`，`2=待开始`，`3=待开奖`，`4=已开奖` |
 | `statusName` | String | 状态名称 |
-| `drawResult` | Integer | 开奖结果：`1=正方胜`，`2=反方胜` |
-| `incomeAmount` | String | 收益金额，`status=4` 时有效 |
+| `drawResult` | Integer | 开奖结果：`1=正方胜`，`2=反方胜`，`status=4` 时有效，否则返回空 |
+| `incomeAmount` | String | 收益金额，已登录且 `status=4` 时有效，否则返回空 |
 
 ---
 
@@ -168,7 +176,8 @@
 | Token | 选填 |
 
 ### 业务说明
-未登录时 `isParticipate` 默认返回 `false`，`balance` 默认返回 `0`。
+未登录时 `isParticipate` 默认返回 `false`，`balance` 返回空。
+未登录时 `buyInfo` 返回空集合。
 
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
@@ -198,7 +207,14 @@
 | `positiveAmount` | String | 正方(涨方)金额 |
 | `negativeAmount` | String | 反方(跌方)金额 |
 | `limitMode` | Integer | 限制模式：`1=仅1次`，`2=不限制` |
-| `balance` | String | 用户资产余额(USDT) |
+| `allocType` | Integer | 净清算池类型 |
+| `allocTypeName` | String | 净清算池名称 |
+| `buyBeginTime` | String | 购买开始时间 |
+| `buyEndTime` | String | 购买结束时间 |
+| `buyInfo` | List | 购买信息 |
+| `buyInfo[].choiceValue` | Integer | 涨/跌：`1=涨`，`2=跌` |
+| `buyInfo[].amount` | String | 数量 |
+| `balance` | String | 用户资产余额(USDT)，未登录时返回空 |
 | `isParticipate` | Boolean | 是否参与：`true=是`，`false=否` |
 
 ---
@@ -218,7 +234,7 @@
 |---|---|---|---|
 | `id` | String | 是 | 期次ID |
 | `choiceValue` | Integer | 是 | 选择值：`1=涨`，`2=跌` |
-| `amount` | BigDecimal | 是 | 金额 |
+| `amount` | BigDecimal | 是 | 金额，最多 `2` 位小数 |
 | `safetyPassword` | String | 是 | 资金密码，加密传输，处理方式参考 `MineController.buyElect` |
 
 ### 响应数据
@@ -233,8 +249,10 @@
 支付币种按 `USDT` 处理。
 支付前需校验资金密码，处理方式参考 `MineController.buyElect`。
 仅 `status=1(进行中)`、`status=2(待开始)` 的期次允许支付。
-支付时需校验 `minPayAmount/maxPayAmount`、`limitMode`、参与时间窗口以及 `maxHoldRatio`。
-`maxHoldRatio` 按本次提交后的 `effectiveAmount` 校验，不按当前用户整期期次累计占比处理。
+`amount` 必须大于 `0` 且最多 `2` 位小数，并校验 `minPayAmount/maxPayAmount`、`limitMode`、参与时间窗口以及 `maxHoldRatio`。
+手续费按 `fee = amount * feeRate` 计算，结果按现有精度向上取整，`effectiveAmount = amount - fee`。
+`maxHoldRatio` 按当前用户提交后的累计有效金额占比校验。
+校验公式为 `(用户历史effectiveAmount + 本次effectiveAmount) / (当前期次totalEffectiveAmount + 本次effectiveAmount)`。
 当期次当前 `totalEffectiveAmount <= 0` 时，本次不做 `maxHoldRatio` 拦截，避免首笔订单无法参与。
 支付成功后除落库 `oracle_order` 外，还需同步回写 `oracle_issue` 聚合字段。
 支付成功后还需同步维护 `account_oracle` 用户汇总。
@@ -260,6 +278,10 @@
 ### 请求参数
 无
 
+### 业务说明
+`totalIncomeAmount`、`totalProfitAmount` 直接读取 `account_oracle` 最新汇总记录，为空时返回 `0`。
+`waitDrawNum` 统计当前用户待开奖期次数量，同一期多笔订单按 `1` 计算。
+
 ### 响应数据
 `data` 为 `OracleIncomeTotalRes`
 
@@ -267,7 +289,7 @@
 |---|---|---|
 | `totalIncomeAmount` | String | 累计收益 |
 | `totalProfitAmount` | String | 累计盈利 |
-| `waitDrawNum` | String | 待开奖数量 |
+| `waitDrawNum` | String | 待开奖期次数量，同一期多笔订单算 `1` |
 
 ---
 
@@ -333,8 +355,11 @@
 | `beginTime` | String | 期次开始时间 |
 | `endTime` | String | 期次结束时间 |
 | `status` | Integer | 状态：`1=进行中`，`2=待开始`，`3=待开奖`，`4=已开奖` |
-| `upAmount` | String | 当前用户参与的 `UP/YES` 有效金额 |
-| `downAmount` | String | 当前用户参与的 `DOWN/NO` 有效金额 |
+| `positiveAmount` | String | 正方(涨方)金额 |
+| `negativeAmount` | String | 反方(跌方)金额 |
+| `buyInfo` | List | 购买信息 |
+| `buyInfo[].choiceValue` | Integer | 涨/跌：`1=涨`，`2=跌` |
+| `buyInfo[].amount` | String | 数量 |
 | `totalProfitAmount` | String | 当前期次盈利总额金额 |
 | `incomeAmount` | String | 当前期次收益总额金额 |
 
