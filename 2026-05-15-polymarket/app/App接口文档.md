@@ -11,17 +11,17 @@
 ### 请求头
 | 名称 | 是否必填 | 类型 | 说明 |
 |---|---|---|---|
-| `Language` | 否 | String | 语言，默认 `en_US` |
+| `Language` | 否 | String | 语言，支持 `zh-CN`、`en-US`、`vi-VN`、`id-ID` |
 | `Token` | 按接口说明 | String | 登录凭证 |
 
 ### 通用响应结构
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `success` | Boolean | 是否成功 |
-| `ts` | String | 服务端当前时间戳 |
+| `ts` | String | 服务端当前秒级时间戳 |
 | `data` | Object | 响应数据 |
 | `code` | Integer | 响应码，成功为 `200` |
-| `msg` | String | 响应描述 |
+| `msg` | String | 响应描述，成功为 `成功` |
 
 ### 分页响应结构
 `data` 为分页对象时，结构如下：
@@ -39,7 +39,7 @@
 ### 字段说明
 | 规则 | 说明 |
 |---|---|
-| 时间字段 | 返回时间戳字符串 |
+| 时间字段 | 返回毫秒时间戳字符串 |
 | `Long` 字段 | 返回 String |
 | `BigDecimal` 字段 | 返回 String |
 | 请求参数 | 除 `tinyint`、`Int`、`BigDecimal` 外，其他统一使用 String |
@@ -60,6 +60,12 @@
 ### 请求参数
 无
 
+### 请求示例
+```http
+GET /v1/oracle/symbol/select
+Language: zh-CN
+```
+
 ### 响应数据
 `data` 为 `List<SelectRes>`
 
@@ -68,8 +74,25 @@
 | `value` | String | 交易对编码 |
 | `label` | String | 基础币名称 |
 
-### 返回值说明
-当前根据 `OraclePairSymbolEnum` 返回。
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": [
+    {
+      "value": "DOGEUSDT",
+      "label": "DOGE"
+    },
+    {
+      "value": "BTCUSDT",
+      "label": "BTC"
+    }
+  ],
+  "code": 200,
+  "msg": "成功"
+}
+```
 
 ---
 
@@ -83,13 +106,16 @@
 | 请求方式 | `GET` |
 | Token | 否 |
 
-### 业务说明
-查询 `oracle_issue` 表中 `isRecommended=1` 且 `status=1` 的数据，按倒序返回，不分页。
-
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
 |---|---|---|---|
 | `symbol` | String | 否 | 币对 |
+
+### 请求示例
+```http
+GET /v1/oracle/issue/recommend/list?symbol=DOGEUSDT
+Language: zh-CN
+```
 
 ### 响应数据
 `data` 为 `List<OracleRecommendIssueRes>`
@@ -116,6 +142,39 @@
 | `positiveAmount` | String | 正方(涨方)金额 |
 | `negativeAmount` | String | 反方(跌方)金额 |
 
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": [
+    {
+      "id": "1001",
+      "issueCode": "DOGE-1H-2026061509",
+      "symbol": "DOGEUSDT",
+      "baseCoin": "DOGE",
+      "beginTime": "1750045200000",
+      "endTime": "1750048800000",
+      "buyBeginTime": "1750044300000",
+      "buyEndTime": "1750048500000",
+      "openPrice": "0.186200000000000000",
+      "closePrice": "0.186900000000000000",
+      "startAdvanceMinutes": 15,
+      "cutoffAdvanceMinutes": 5,
+      "marketType": 1,
+      "status": 1,
+      "statusName": "进行中",
+      "isRecommended": 1,
+      "totalEffectiveAmount": "1250.360000000000000000",
+      "positiveAmount": "760.120000000000000000",
+      "negativeAmount": "490.240000000000000000"
+    }
+  ],
+  "code": 200,
+  "msg": "成功"
+}
+```
+
 ---
 
 ## 3. 查询所有期次
@@ -128,10 +187,6 @@
 | 请求方式 | `GET` |
 | Token | 选填 |
 
-### 业务说明
-未登录或期次状态不是 `4` 时，`incomeAmount` 返回空。
-期次状态不是 `4` 时，`drawResult` 返回空。
-
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
 |---|---|---|---|
@@ -139,6 +194,13 @@
 | `pageSize` | Integer | 否 | 每页数量，默认 `10` |
 | `status` | Integer | 否 | 状态：`1=进行中`，`2=待开始`，`3=待开奖`，`4=已开奖` |
 | `symbol` | String | 否 | 币对 |
+
+### 请求示例
+```http
+GET /v1/oracle/issue/list?pageNo=1&pageSize=10&status=4&symbol=DOGEUSDT
+Language: zh-CN
+Token: xxxxx
+```
 
 ### 响应数据
 `data` 为 `PageResult<OracleIssueListRes>`
@@ -163,6 +225,45 @@
 | `drawResult` | Integer | 开奖结果：`1=正方胜`，`2=反方胜`，`status=4` 时有效，否则返回空 |
 | `incomeAmount` | String | 收益金额，已登录且 `status=4` 时有效，否则返回空 |
 
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": {
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalSize": "2",
+    "totalPages": 1,
+    "prevPage": 1,
+    "nextPage": 1,
+    "list": [
+      {
+        "id": "1001",
+        "issueCode": "DOGE-1H-2026061509",
+        "symbol": "DOGEUSDT",
+        "baseCoin": "DOGE",
+        "beginTime": "1750045200000",
+        "endTime": "1750048800000",
+        "buyBeginTime": "1750044300000",
+        "buyEndTime": "1750048500000",
+        "openPrice": "0.186200000000000000",
+        "closePrice": "0.187500000000000000",
+        "startAdvanceMinutes": 15,
+        "cutoffAdvanceMinutes": 5,
+        "marketType": 1,
+        "status": 4,
+        "statusName": "已开奖",
+        "drawResult": 1,
+        "incomeAmount": "32.560000000000000000"
+      }
+    ]
+  },
+  "code": 200,
+  "msg": "成功"
+}
+```
+
 ---
 
 ## 4. 查询期次详情
@@ -175,14 +276,17 @@
 | 请求方式 | `GET` |
 | Token | 选填 |
 
-### 业务说明
-未登录时 `isParticipate` 默认返回 `false`，`balance` 返回空。
-未登录时 `buyInfo` 返回空集合。
-
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
 |---|---|---|---|
 | `id` | String | 是 | 期次ID |
+
+### 请求示例
+```http
+GET /v1/oracle/issue/info?id=1001
+Language: zh-CN
+Token: xxxxx
+```
 
 ### 响应数据
 `data` 为 `OracleIssueInfoRes`
@@ -217,6 +321,48 @@
 | `balance` | String | 用户资产余额(USDT)，未登录时返回空 |
 | `isParticipate` | Boolean | 是否参与：`true=是`，`false=否` |
 
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": {
+    "id": "1001",
+    "issueCode": "DOGE-1H-2026061509",
+    "symbol": "DOGEUSDT",
+    "baseCoin": "DOGE",
+    "beginTime": "1750045200000",
+    "endTime": "1750048800000",
+    "openPrice": "0.186200000000000000",
+    "closePrice": "0.186900000000000000",
+    "startAdvanceMinutes": 15,
+    "cutoffAdvanceMinutes": 5,
+    "marketType": 1,
+    "status": 1,
+    "statusName": "进行中",
+    "feeRate": "0.050000000000000000",
+    "totalEffectiveAmount": "1250.360000000000000000",
+    "positiveAmount": "760.120000000000000000",
+    "negativeAmount": "490.240000000000000000",
+    "limitMode": 2,
+    "allocType": 1,
+    "allocTypeName": "胜方按有效金额占比分配",
+    "buyBeginTime": "1750044300000",
+    "buyEndTime": "1750048500000",
+    "buyInfo": [
+      {
+        "choiceValue": 1,
+        "amount": "120.000000000000000000"
+      }
+    ],
+    "balance": "568.230000000000000000",
+    "isParticipate": true
+  },
+  "code": 200,
+  "msg": "成功"
+}
+```
+
 ---
 
 ## 5. 支付
@@ -237,6 +383,20 @@
 | `amount` | BigDecimal | 是 | 金额，最多 `2` 位小数 |
 | `safetyPassword` | String | 是 | 资金密码，加密传输，处理方式参考 `MineController.buyElect` |
 
+### 请求示例
+```json
+POST /v1/oracle/pay
+Language: zh-CN
+Token: xxxxx
+
+{
+  "id": "1001",
+  "choiceValue": 1,
+  "amount": 100.00,
+  "safetyPassword": "encrypted-password"
+}
+```
+
 ### 响应数据
 `data` 为 `Boolean`
 
@@ -244,24 +404,16 @@
 |---|---|---|
 | `data` | Boolean | 成功返回 `true` |
 
-### 业务说明
-支付失败直接返回业务错误码和错误信息。
-支付币种按 `USDT` 处理。
-支付前需校验资金密码，处理方式参考 `MineController.buyElect`。
-仅 `status=1(进行中)`、`status=2(待开始)` 的期次允许支付。
-`amount` 必须大于 `0` 且最多 `2` 位小数，并校验 `minPayAmount/maxPayAmount`、`limitMode`、参与时间窗口以及 `maxHoldRatio`。
-手续费按 `fee = amount * feeRate` 计算，结果按现有精度向上取整，`effectiveAmount = amount - fee`。
-`maxHoldRatio` 按当前用户提交后的累计有效金额占比校验。
-校验公式为 `(用户历史effectiveAmount + 本次effectiveAmount) / (当前期次totalEffectiveAmount + 本次effectiveAmount)`。
-当期次当前 `totalEffectiveAmount <= 0` 时，本次不做 `maxHoldRatio` 拦截，避免首笔订单无法参与。
-支付成功后除落库 `oracle_order` 外，还需同步回写 `oracle_issue` 聚合字段。
-支付成功后还需同步维护 `account_oracle` 用户汇总。
-若当前用户不存在汇总记录，则新增一条。
-`totalPayAmount += amount`
-`totalFeeAmount += fee`
-`totalIncomeAmount` 支付时不变，待开奖结算后再处理。
-`totalProfitAmount` 支付时不变，待开奖结算后再处理。
-钱包账单和资产流水使用 Oracle 专用分类，错误场景使用 Oracle 专用错误码。
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": true,
+  "code": 200,
+  "msg": "成功"
+}
+```
 
 ---
 
@@ -272,15 +424,18 @@
 |---|---|
 | 接口名称 | 查询收益统计 |
 | 请求地址 | `/v1/oracle/income/total` |
-| 请求方式 | `POST` |
+| 请求方式 | `GET` |
 | Token | 是 |
 
 ### 请求参数
 无
 
-### 业务说明
-`totalIncomeAmount`、`totalProfitAmount` 直接读取 `account_oracle` 最新汇总记录，为空时返回 `0`。
-`waitDrawNum` 统计当前用户待开奖期次数量，同一期多笔订单按 `1` 计算。
+### 请求示例
+```http
+GET /v1/oracle/income/total
+Language: zh-CN
+Token: xxxxx
+```
 
 ### 响应数据
 `data` 为 `OracleIncomeTotalRes`
@@ -290,6 +445,21 @@
 | `totalIncomeAmount` | String | 累计收益 |
 | `totalProfitAmount` | String | 累计盈利 |
 | `waitDrawNum` | String | 待开奖期次数量，同一期多笔订单算 `1` |
+
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": {
+    "totalIncomeAmount": "286.520000000000000000",
+    "totalProfitAmount": "120.180000000000000000",
+    "waitDrawNum": "3"
+  },
+  "code": 200,
+  "msg": "成功"
+}
+```
 
 ---
 
@@ -303,13 +473,14 @@
 | 请求方式 | `GET` |
 | Token | 否 |
 
-### 业务说明
-根据 `OracleIssueStatusEnum` 返回期次状态选择列表。
-`label` 按请求头 `Language` 对应语言国际化返回。
-按需求约定，该接口不返回 `2=待开始`。
-
 ### 请求参数
 无
+
+### 请求示例
+```http
+GET /v1/oracle/issue/status/select
+Language: zh-CN
+```
 
 ### 响应数据
 `data` 为 `List<SelectRes>`
@@ -318,6 +489,30 @@
 |---|---|---|
 | `value` | String | 状态值 |
 | `label` | String | 状态名称 |
+
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": [
+    {
+      "value": "1",
+      "label": "进行中"
+    },
+    {
+      "value": "3",
+      "label": "待开奖"
+    },
+    {
+      "value": "4",
+      "label": "已开奖"
+    }
+  ],
+  "code": 200,
+  "msg": "成功"
+}
+```
 
 ---
 
@@ -338,6 +533,13 @@
 | `pageSize` | Integer | 否 | 每页数量，默认 `10` |
 | `issueId` | String | 否 | 期次ID |
 | `status` | Integer | 否 | 状态，取值通过“查询期次状态”接口获取 |
+
+### 请求示例
+```http
+GET /v1/oracle/income/list?pageNo=1&pageSize=10&status=4
+Language: zh-CN
+Token: xxxxx
+```
 
 ### 响应数据
 `data` 为 `PageResult<OracleIncomeListRes>`
@@ -363,6 +565,49 @@
 | `totalProfitAmount` | String | 当前期次盈利总额金额 |
 | `incomeAmount` | String | 当前期次收益总额金额 |
 
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": {
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalSize": "1",
+    "totalPages": 1,
+    "prevPage": 1,
+    "nextPage": 1,
+    "list": [
+      {
+        "id": "1001",
+        "issueCode": "DOGE-1H-2026061509",
+        "symbol": "DOGEUSDT",
+        "baseCoin": "DOGE",
+        "marketType": 1,
+        "openPrice": "0.186200000000000000",
+        "closePrice": "0.187500000000000000",
+        "totalEffectiveAmount": "1250.360000000000000000",
+        "beginTime": "1750045200000",
+        "endTime": "1750048800000",
+        "status": 4,
+        "positiveAmount": "760.120000000000000000",
+        "negativeAmount": "490.240000000000000000",
+        "buyInfo": [
+          {
+            "choiceValue": 1,
+            "amount": "120.000000000000000000"
+          }
+        ],
+        "totalProfitAmount": "32.560000000000000000",
+        "incomeAmount": "152.560000000000000000"
+      }
+    ]
+  },
+  "code": 200,
+  "msg": "成功"
+}
+```
+
 ---
 
 ## 9. 查询订单状态
@@ -375,13 +620,14 @@
 | 请求方式 | `GET` |
 | Token | 否 |
 
-### 业务说明
-根据 `OracleOrderStatusEnum` 返回订单状态选择列表。
-`label` 按请求头 `Language` 对应语言国际化返回。
-当前订单状态枚举仅包含 `1=待开奖`、`2=已结算`、`3=未中奖`。
-
 ### 请求参数
 无
+
+### 请求示例
+```http
+GET /v1/oracle/order/status/select
+Language: zh-CN
+```
 
 ### 响应数据
 `data` 为 `List<SelectRes>`
@@ -390,6 +636,30 @@
 |---|---|---|
 | `value` | String | 状态值 |
 | `label` | String | 状态名称 |
+
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": [
+    {
+      "value": "1",
+      "label": "待开奖"
+    },
+    {
+      "value": "2",
+      "label": "已结算"
+    },
+    {
+      "value": "3",
+      "label": "未中奖"
+    }
+  ],
+  "code": 200,
+  "msg": "成功"
+}
+```
 
 ---
 
@@ -403,11 +673,6 @@
 | 请求方式 | `GET` |
 | Token | 是 |
 
-### 业务说明
-查询当前登录用户的付款记录。
-主表为 `oracle_order`，用于订单状态筛选时请配合“查询订单状态”接口。
-SQL 表连接不超过 3 层，且不在 SQL 中处理业务数据。
-
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
 |---|---|---|---|
@@ -415,6 +680,13 @@ SQL 表连接不超过 3 层，且不在 SQL 中处理业务数据。
 | `pageSize` | Integer | 否 | 每页数量，默认 `10` |
 | `status` | Integer | 否 | 状态：`1=待开奖`，`2=已结算`，`3=未中奖` |
 | `issueId` | String | 否 | 期次ID |
+
+### 请求示例
+```http
+GET /v1/oracle/order/list?pageNo=1&pageSize=10&status=1&issueId=1001
+Language: zh-CN
+Token: xxxxx
+```
 
 ### 响应数据
 `data` 为 `PageResult<OracleOrderListRes>`
@@ -434,3 +706,174 @@ SQL 表连接不超过 3 层，且不在 SQL 中处理业务数据。
 | `createdTime` | String | 创建时间(参与时间) |
 | `issueId` | String | 期次ID |
 | `issueCode` | String | 期次编码 |
+
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": {
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalSize": "1",
+    "totalPages": 1,
+    "prevPage": 1,
+    "nextPage": 1,
+    "list": [
+      {
+        "id": "9001",
+        "orderNo": "PM202606150001",
+        "symbol": "DOGEUSDT",
+        "baseCoin": "DOGE",
+        "marketType": 1,
+        "status": 1,
+        "statusName": "待开奖",
+        "choiceValue": 1,
+        "amount": "100.00",
+        "effectiveAmount": "95.000000000000000000",
+        "createdTime": "1750046100000",
+        "issueId": "1001",
+        "issueCode": "DOGE-1H-2026061509"
+      }
+    ]
+  },
+  "code": 200,
+  "msg": "成功"
+}
+```
+
+---
+
+## 11. 查询K线
+
+### 接口信息
+| 项 | 内容 |
+|---|---|
+| 接口名称 | 查询K线 |
+| 请求地址 | `/v1/oracle/kline` |
+| 请求方式 | `GET` |
+| Token | 否 |
+
+### 请求参数
+| 字段 | 类型 | 是否必填 | 说明 |
+|---|---|---|---|
+| `issueId` | String | 是 | 期次ID |
+| `limit` | Integer | 否 | 返回数量，默认 `20` |
+
+### 请求示例
+```http
+GET /v1/oracle/kline?issueId=1001&limit=20
+Language: zh-CN
+```
+
+### 响应数据
+`data` 为 `OracleKlineRes`
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `symbol` | String | 币对 |
+| `cycle` | String | K线周期 |
+| `data` | List | K线数据 |
+| `data[].price` | String | 价格 |
+| `data[].time` | String | 时间，返回 `lastTime` |
+
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": {
+    "symbol": "DOGEUSDT",
+    "cycle": "1h",
+    "data": [
+      {
+        "price": "0.186200000000000000",
+        "time": "1750045200000"
+      },
+      {
+        "price": "0.186900000000000000",
+        "time": "1750047000000"
+      },
+      {
+        "price": "0.187500000000000000",
+        "time": "1750048800000"
+      }
+    ]
+  },
+  "code": 200,
+  "msg": "成功"
+}
+```
+
+---
+
+## 12. 查询系统配置
+
+### 接口信息
+| 项 | 内容 |
+|---|---|
+| 接口名称 | 查询系统配置 |
+| 请求地址 | `/v1/oracle/config` |
+| 请求方式 | `POST` |
+| Token | 否 |
+
+### 请求参数
+| 字段 | 类型 | 是否必填 | 说明 |
+|---|---|---|---|
+| `configKey` | String | 是 | 配置KEY，盘口背景=`oracle_market_depth_background`，盘口规则=`oracle_market_depth_rule` |
+
+### 请求示例
+```json
+POST /v1/oracle/config
+Language: zh-CN
+
+{
+  "configKey": "oracle_market_depth_background"
+}
+```
+
+### 响应数据
+`data` 为 `Object`
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `data` | Object | 配置内容，按 `sys_config.cfg_value` 的 JSON 结构直接返回 |
+
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": {
+    "title": "盘口背景：本期是自动生成的外部行情事件。用戶只选择涨或跌，平台不作为对手方，不承诺固定赔率，也不参与开奖结果。"
+  },
+  "code": 200,
+  "msg": "成功"
+}
+```
+
+```json
+{
+  "success": true,
+  "ts": "1750062000",
+  "data": {
+    "title": "盘口背景：本期是自动生成的外部行情事件。用戶只选择涨或跌，平台不作为对手方，不承诺固定赔率，也不参与开奖结果。",
+    "items": [
+      {
+        "key": "evidenceCaliber",
+        "value": "K线 open/close"
+      },
+      {
+        "key": "closingTime",
+        "value": "观察前{0}分钟"
+      },
+      {
+        "key": "netClearingPool",
+        "value": "{1}"
+      }
+    ]
+  },
+  "code": 200,
+  "msg": "成功"
+}
+```
