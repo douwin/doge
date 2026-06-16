@@ -557,6 +557,7 @@ Token: xxxxx
 | `beginTime` | String | 期次开始时间 |
 | `endTime` | String | 期次结束时间 |
 | `status` | Integer | 状态：`1=进行中`，`2=待开始`，`3=待开奖`，`4=已开奖` |
+| `statusName` | String | 状态名称（新增，按语言国际化返回） |
 | `positiveAmount` | String | 正方(涨方)金额 |
 | `negativeAmount` | String | 反方(跌方)金额 |
 | `buyInfo` | List | 购买信息 |
@@ -590,6 +591,7 @@ Token: xxxxx
         "beginTime": "1750045200000",
         "endTime": "1750048800000",
         "status": 4,
+        "statusName": "已开奖",
         "positiveAmount": "760.120000000000000000",
         "negativeAmount": "490.240000000000000000",
         "buyInfo": [
