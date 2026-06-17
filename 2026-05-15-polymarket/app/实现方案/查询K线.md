@@ -23,7 +23,8 @@
 * 查询表: `oracle_kline_snapshot_${symbol.toLowerCase()}`
 ### 请求参数
 * issueId 期次ID(必填)
-* limit 返回数量, 仅限制数据库查询条数, 不传默认 50
+* limit 返回数量(必填, 仅限制数据库查询条数)
+* time 上一页最后一条K线时间戳(毫秒, 非必填)
 ### 响应字段
 * symbol 币对
 * cycle K线周期
@@ -55,3 +56,5 @@
 8. 获取K线时,需通过查询数据库的数据和缓存数据融合,缓存key(`market:kline:<交易对小写>:<K线周期小写>`),缓存值为 `List` 且最多参与融合 30 条数据,拿到数据后通过 `lastTime` 去重,最终按 `lastTime` 升序返回,limit 仅限制数据库查询条数（已完成）
 9. 判断当前时间小于期次开始时间则返回空集合（已完成）
 10. 从redis拿到数据后,需通过time过滤出在期次的开始和结束时间范围内的数据(包含开始和结束时间)（已完成）
+11. limit修改为必填,后台不做默认值及最大值和最小值校验
+    增加time字段(时间戳,毫秒),如果为空才从redis中加载数据+数据库数据返回,如果time不为空,通过数据库查询lastTime小于time的limit数据,并保留`kline_interval = klinePeriod`、`open_time >= startTime`、`close_time < endTime`条件（已完成）
