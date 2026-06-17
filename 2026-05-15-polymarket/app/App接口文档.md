@@ -560,6 +560,9 @@ Token: xxxxx
 | `statusName` | String | 状态名称（新增，按语言国际化返回） |
 | `positiveAmount` | String | 正方(涨方)金额 |
 | `negativeAmount` | String | 反方(跌方)金额 |
+| `positiveRate` | String | 正方(涨方)比例（新增） |
+| `negativeRate` | String | 反方(跌方)比例（新增） |
+| `winnerRate` | String | 胜方比例（新增，仅已开奖时返回） |
 | `buyInfo` | List | 购买信息 |
 | `buyInfo[].choiceValue` | Integer | 涨/跌：`1=涨`，`2=跌` |
 | `buyInfo[].amount` | String | 数量 |
@@ -585,23 +588,26 @@ Token: xxxxx
         "symbol": "DOGEUSDT",
         "baseCoin": "DOGE",
         "marketType": 1,
-        "openPrice": "0.186200000000000000",
-        "closePrice": "0.187500000000000000",
-        "totalEffectiveAmount": "1250.360000000000000000",
+        "openPrice": "0.1862",
+        "closePrice": "0.1875",
+        "totalEffectiveAmount": "1250.36",
         "beginTime": "1750045200000",
         "endTime": "1750048800000",
         "status": 4,
         "statusName": "已开奖",
-        "positiveAmount": "760.120000000000000000",
-        "negativeAmount": "490.240000000000000000",
+        "positiveAmount": "760.12",
+        "negativeAmount": "490.24",
+        "positiveRate": "0.60792091",
+        "negativeRate": "0.39207908",
+        "winnerRate": "0.60792091",
         "buyInfo": [
           {
             "choiceValue": 1,
-            "amount": "120.000000000000000000"
+            "amount": "120"
           }
         ],
-        "totalProfitAmount": "32.560000000000000000",
-        "incomeAmount": "152.560000000000000000"
+        "totalProfitAmount": "32.56",
+        "incomeAmount": "152.56"
       }
     ]
   },
@@ -708,6 +714,8 @@ Token: xxxxx
 | `createdTime` | String | 创建时间(参与时间) |
 | `issueId` | String | 期次ID |
 | `issueCode` | String | 期次编码 |
+| `profitAmount` | String | 盈利金额（新增） |
+| `incomeAmount` | String | 收益金额（新增） |
 
 ### 响应示例
 ```json
@@ -731,11 +739,13 @@ Token: xxxxx
         "status": 1,
         "statusName": "待开奖",
         "choiceValue": 1,
-        "amount": "100.00",
-        "effectiveAmount": "95.000000000000000000",
+        "amount": "100",
+        "effectiveAmount": "95",
         "createdTime": "1750046100000",
         "issueId": "1001",
-        "issueCode": "DOGE-1H-2026061509"
+        "issueCode": "DOGE-1H-2026061509",
+        "profitAmount": "0",
+        "incomeAmount": "0"
       }
     ]
   },
@@ -760,11 +770,12 @@ Token: xxxxx
 | 字段 | 类型 | 是否必填 | 说明 |
 |---|---|---|---|
 | `issueId` | String | 是 | 期次ID |
-| `limit` | Integer | 否 | 返回数量，默认 `20` |
+| `limit` | Integer | 是 | 返回数量 |
+| `time` | String | 否 | 上一页最后一条K线时间戳(毫秒)（新增，不为空时查询 `lastTime < time` 的历史数据） |
 
 ### 请求示例
 ```http
-GET /v1/oracle/kline?issueId=1001&limit=20
+GET /v1/oracle/kline?issueId=1001&limit=20&time=1750048800000
 Language: zh-CN
 ```
 
@@ -789,15 +800,15 @@ Language: zh-CN
     "cycle": "1h",
     "data": [
       {
-        "price": "0.186200000000000000",
+        "price": "0.1862",
         "time": "1750045200000"
       },
       {
-        "price": "0.186900000000000000",
+        "price": "0.1869",
         "time": "1750047000000"
       },
       {
-        "price": "0.187500000000000000",
+        "price": "0.1875",
         "time": "1750048800000"
       }
     ]
