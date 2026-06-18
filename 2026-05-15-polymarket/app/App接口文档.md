@@ -130,6 +130,7 @@ Language: zh-CN
 | `endTime` | String | 结束时间 |
 | `buyBeginTime` | String | 购买开始时间 |
 | `buyEndTime` | String | 购买结束时间 |
+| `currentTime` | String | 当前时间 |
 | `openPrice` | String | 基准价 |
 | `closePrice` | String | 结束价(当前价) |
 | `startAdvanceMinutes` | Integer | 参与开始提前分钟数 |
@@ -157,6 +158,7 @@ Language: zh-CN
       "endTime": "1750048800000",
       "buyBeginTime": "1750044300000",
       "buyEndTime": "1750048500000",
+      "currentTime": "1750046100000",
       "openPrice": "0.186200000000000000",
       "closePrice": "0.186900000000000000",
       "startAdvanceMinutes": 15,
@@ -215,6 +217,7 @@ Token: xxxxx
 | `endTime` | String | 结束时间 |
 | `buyBeginTime` | String | 购买开始时间 |
 | `buyEndTime` | String | 购买结束时间 |
+| `currentTime` | String | 当前时间 |
 | `openPrice` | String | 基准价 |
 | `closePrice` | String | 结束价(当前价) |
 | `startAdvanceMinutes` | Integer | 参与开始提前分钟数 |
@@ -247,6 +250,7 @@ Token: xxxxx
         "endTime": "1750048800000",
         "buyBeginTime": "1750044300000",
         "buyEndTime": "1750048500000",
+        "currentTime": "1750046100000",
         "openPrice": "0.186200000000000000",
         "closePrice": "0.187500000000000000",
         "startAdvanceMinutes": 15,
@@ -315,6 +319,7 @@ Token: xxxxx
 | `allocTypeName` | String | 净清算池名称 |
 | `buyBeginTime` | String | 购买开始时间 |
 | `buyEndTime` | String | 购买结束时间 |
+| `currentTime` | String | 当前时间 |
 | `buyInfo` | List | 购买信息 |
 | `buyInfo[].choiceValue` | Integer | 涨/跌：`1=涨`，`2=跌` |
 | `buyInfo[].amount` | String | 数量 |
@@ -349,6 +354,7 @@ Token: xxxxx
     "allocTypeName": "胜方按有效金额占比分配",
     "buyBeginTime": "1750044300000",
     "buyEndTime": "1750048500000",
+    "currentTime": "1750046100000",
     "buyInfo": [
       {
         "choiceValue": 1,
@@ -563,6 +569,7 @@ Token: xxxxx
 | `positiveRate` | String | 正方(涨方)比例（新增） |
 | `negativeRate` | String | 反方(跌方)比例（新增） |
 | `winnerRate` | String | 胜方比例（新增，仅已开奖时返回） |
+| `loserRate` | String | 负方比例（新增，仅已开奖时返回） |
 | `buyInfo` | List | 购买信息 |
 | `buyInfo[].choiceValue` | Integer | 涨/跌：`1=涨`，`2=跌` |
 | `buyInfo[].amount` | String | 数量 |
@@ -599,11 +606,16 @@ Token: xxxxx
         "negativeAmount": "490.24",
         "positiveRate": "0.60792091",
         "negativeRate": "0.39207908",
-        "winnerRate": "0.60792091",
+        "winnerRate": "0.15786981",
+        "loserRate": "0.16318537",
         "buyInfo": [
           {
             "choiceValue": 1,
             "amount": "120"
+          },
+          {
+            "choiceValue": 2,
+            "amount": "80"
           }
         ],
         "totalProfitAmount": "32.56",
