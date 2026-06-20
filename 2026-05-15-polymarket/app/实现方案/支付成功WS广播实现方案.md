@@ -75,7 +75,7 @@ ws:oracle:issue:amount:update
 ## 发布消息体
 ```json
 {
-  "event": "oracle_issue_amount_update",
+  "event": "oracle_issue_stats_changed",
   "data": {
     "issueId": "1001",
     "issueCode": "DOGE-1H-2026061509",
@@ -199,7 +199,7 @@ ws:oracle:issue:amount:update
 2. 不需要 Token
 3. 不需要订阅某一期次
 4. 收到如下事件时处理:
-   * `oracle_issue_amount_update`
+   * `oracle_issue_stats_changed`
 5. 前端处理规则:
    * 若当前页面展示的是该 `issueId`,则更新金额
    * 否则忽略
