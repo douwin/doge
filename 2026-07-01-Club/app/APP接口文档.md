@@ -846,3 +846,68 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
   }
 }
 ```
+
+---
+
+## 10. 分页查询代币发放记录
+
+### 接口信息
+| 项 | 内容 |
+|---|---|
+| 接口名称 | 分页查询代币发放记录 |
+| 请求地址 | `/api/v1/club/member/token/list` |
+| 请求方式 | `GET` |
+| Token | 必填 |
+
+### 请求参数
+| 字段 | 类型 | 是否必填 | 说明 |
+|---|---|---|---|
+| `clubConfigId` | String | 是 | Club配置ID |
+| `memberId` | String | 是 | 会员ID |
+| `pageNo` | Integer | 否 | 页码，默认 `1`，继承自 `PageReq` |
+| `pageSize` | Integer | 否 | 每页数量，默认 `10`，继承自 `PageReq` |
+
+### 请求示例
+```http
+GET /api/v1/club/member/token/list?clubConfigId=10001&memberId=20001&pageNo=1&pageSize=10
+Language: zh_CN
+Token: eyJhbGciOiJIUzI1NiJ9.demo
+```
+
+### 响应数据
+`data` 为分页对象，`list` 元素为 `ClubTokenRecordRes`
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | String | 记录ID |
+| `amount` | String | 数量 |
+| `createTime` | String | 创建时间戳(毫秒) |
+| `status` | Integer | 状态 |
+| `statusName` | String | 状态名称 |
+
+### 响应示例
+```json
+{
+  "success": true,
+  "ts": 1784592009123,
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalSize": 1,
+    "totalPages": 1,
+    "prevPage": 1,
+    "nextPage": 1,
+    "list": [
+      {
+        "id": "70011",
+        "amount": "100",
+        "createTime": "1782864000000",
+        "status": 2,
+        "statusName": "已发放"
+      }
+    ]
+  }
+}
+```
