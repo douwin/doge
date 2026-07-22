@@ -58,7 +58,8 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|
 | `name` | String | 权益名称 |
 | `unit` | String | 单位 |
-| `num` | String | 展示文案，按权益类型格式化后的数量 |
+| `num` | String | 原始数量，取 `club_config_benefit.config_num` |
+| `displayName` | String | 展示文案，按权益类型格式化后的数量 |
 | `remark` | String | 权益备注 |
 
 `discountInfo` 结构：
@@ -95,13 +96,15 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
       {
         "name": "ELON代币",
         "unit": "ELON",
-        "num": "10000 ELON",
+        "num": "10000",
+        "displayName": "10000 ELON",
         "remark": "支付成功后发放"
       },
       {
         "name": "高级权益票证",
         "unit": "张",
-        "num": "1 张高级权益票证",
+        "num": "1",
+        "displayName": "1 张高级权益票证",
         "remark": "具体活动规则以通知为准"
       }
     ],
@@ -144,28 +147,35 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 2. `clubConfigId` 必须可转为数值，否则返回参数校验失败。
 3. `clubConfig` 不存在，或状态不是启用时，返回 `CLUB_NOT_EXISTS`。
 
+
 ## 复杂业务说明
 1. `benefitList` 来源于 `club_config_benefit`，当前实现不按 `status` 过滤，排序规则为 `benefitType asc, id asc`。
-2. `purchaseAvailable` 当前有两种明确的不可购买原因：
+2. `benefitList.num` 返回原始配置数量，`benefitList.displayName` 返回带单位/文案的展示值。
+3. `purchaseAvailable` 当前有两种明确的不可购买原因：
    - 当前账号已有一张按规则不可再次新购的会员卡，返回 `false`，原因固定为 `一人一份`。
    - `club_config.used_quota >= club_config.max_quota`，返回 `false`，原因固定为 `当前Club已售罄`。
-3. `isBuy` 的判断规则与“查询已启用的Club”一致，不是简单判断是否存在会员记录。
-4. `isPreRenew` 计算逻辑：
+4. `isBuy` 的判断规则与“查询已启用的Club”一致，不是简单判断是否存在会员记录。
+5. `isPreRenew` 计算逻辑：
    - 仅在当前账号已购且 `validEnd` 不为空时计算。
    - `preRenewDate = validEnd - preRenewDays`。
    - 当 `当前时间 >= preRenewDate` 且 `当前时间 <= validEnd` 时返回 `true`。
-5. `isGracePeriod` 计算逻辑：
+6. `isGracePeriod` 计算逻辑：
    - 仅在当前账号已购且 `validEnd` 不为空时计算。
    - `gracePeriodDate = validEnd + gracePeriodDays`。
    - 当 `当前时间 > validEnd` 且 `当前时间 <= gracePeriodDate` 时返回 `true`。
-6. 折扣相关规则：
+7. 折扣相关规则：
    - 折扣换算公式：`discountRate / 10`，例如 `8` 表示 `8折`。
    - `hasDiscount=true` 需满足存在启用折扣、优惠名额未用尽、并且优惠价小于原价。
    - 当前实现中 `discountFee` 只要存在启用折扣配置就会按折扣值计算；前端如需判断是否展示优惠，应以 `hasDiscount` 为准。
-7. `balance` 仅在已登录且能查询到支付币种资产时返回实际余额，否则返回 `0`。
+8. `balance` 仅在已登录且能查询到支付币种资产时返回实际余额，否则返回 `0`。
 
 ## 失败码
 | 错误码 | 说明 |
 |---|---|
 | `10001` | 参数校验失败 |
 | `10049` | Club不存在 |
+
+# BUG（已完成）
+1. `benefitList.num` 返回值，现改为返回原始配置数量。已完成
+2. `benefitList.displayName` 字段，取值规则沿用原 `num` 的展示逻辑。已完成
+

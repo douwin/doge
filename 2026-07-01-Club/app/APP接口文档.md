@@ -90,7 +90,8 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|
 | `name` | String | 权益名称 |
 | `unit` | String | 单位 |
-| `num` | String | 数量 |
+| `num` | String | 原始数量，取 `club_config_benefit.config_num` |
+| `displayName` | String | 展示文案，按权益类型格式化后的数量 |
 
 `discountInfo` 结构：
 
@@ -125,12 +126,14 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
       {
         "name": "ELON代币",
         "unit": "ELON",
-        "num": "10000"
+        "num": "10000",
+        "displayName": "10000 ELON"
       },
       {
         "name": "高级权益票证",
         "unit": "张",
-        "num": "1"
+        "num": "1",
+        "displayName": "1 张高级权益票证"
       }
     ],
     "isBuy": true,
@@ -150,6 +153,9 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
   }
 }
 ```
+
+### 业务说明
+分页记录按 `benefitType asc, createTime desc, id desc` 排序返回。
 
 ---
 
@@ -213,7 +219,8 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|
 | `name` | String | 权益名称 |
 | `unit` | String | 单位 |
-| `num` | String | 数量 |
+| `num` | String | 原始数量，取 `club_config_benefit.config_num` |
+| `displayName` | String | 展示文案，按权益类型格式化后的数量 |
 | `remark` | String | 权益备注 |
 
 `discountInfo` 结构：
@@ -251,12 +258,14 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
         "name": "ELON代币",
         "unit": "ELON",
         "num": "10000",
+        "displayName": "10000 ELON",
         "remark": "支付成功后发放"
       },
       {
         "name": "高级权益票证",
         "unit": "张",
         "num": "1",
+        "displayName": "1 张高级权益票证",
         "remark": "具体活动规则以通知为准"
       }
     ],
@@ -497,7 +506,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | Token | 必填 |
 
 ### 业务说明
-按当前价格购买 Club。接口内部会校验安全密码，并做当前账号的购买串行锁控制。
+按当前价格购买 Club。接口内部会做当前账号的购买串行锁控制；成功后会落库会员、订单、订单权益、库存和账单，其中会员表会同步写入当前账号的 `accountNo`，订单和订单权益编号统一使用 `IdNoUtils.createOrderNo()` 生成。
 
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
@@ -551,6 +560,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 
 ### 业务说明
 按当前年费续费 Club。接口内部会校验安全密码，并做当前账号的续费串行锁控制。
+续费成功后会更新原会员信息；若历史会员数据缺失，会同步补齐 `accountNo`，并在 `validStart` 为空时按会员创建时间兜底。订单和订单权益编号统一使用 `IdNoUtils.createOrderNo()` 生成。
 
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
@@ -643,8 +653,8 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|---|
 | `clubConfigId` | String | 是 | Club配置ID |
 | `memberId` | String | 是 | 会员ID |
-| `pageNo` | Integer | 否 | 页码，默认 `1` |
-| `pageSize` | Integer | 否 | 每页数量，默认 `10` |
+| `pageNo` | Integer | 否 | 页码，默认 `1`，继承自 `PageReq` |
+| `pageSize` | Integer | 否 | 每页数量，默认 `10`，继承自 `PageReq` |
 
 ### 请求示例
 ```http
@@ -714,8 +724,8 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|---|
 | `clubConfigId` | String | 是 | Club配置ID |
 | `memberId` | String | 是 | 会员ID |
-| `pageNo` | Integer | 否 | 页码，默认 `1` |
-| `pageSize` | Integer | 否 | 每页数量，默认 `10` |
+| `pageNo` | Integer | 否 | 页码，默认 `1`，继承自 `PageReq` |
+| `pageSize` | Integer | 否 | 每页数量，默认 `10`，继承自 `PageReq` |
 
 ### 请求示例
 ```http

@@ -42,7 +42,8 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|
 | `name` | String | 权益名称 |
 | `unit` | String | 单位 |
-| `num` | String | 展示文案，按权益类型格式化后的数量 |
+| `num` | String | 原始数量，取 `club_config_benefit.config_num` |
+| `displayName` | String | 展示文案，按权益类型格式化后的数量 |
 
 `discountInfo` 结构：
 
@@ -77,12 +78,14 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
       {
         "name": "ELON代币",
         "unit": "ELON",
-        "num": "10000 ELON"
+        "num": "10000",
+        "displayName": "10000 ELON"
       },
       {
         "name": "高级权益票证",
         "unit": "张",
-        "num": "1 张高级权益票证"
+        "num": "1",
+        "displayName": "1 张高级权益票证"
       }
     ],
     "isBuy": true,
@@ -109,16 +112,21 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 
 ## 复杂业务说明
 1. `benefitList` 数据来源于 `club_config_benefit`，当前实现不再按 `status` 过滤，排序规则为 `benefitType asc, id asc`。
-2. `isBuy` 的判断不是单纯“存在会员记录”，而是“当前账号存在会员，且当前规则下不允许再新购”。判断逻辑如下：
+2. `benefitList.num` 返回原始配置数量，`benefitList.displayName` 返回带单位/文案的展示值。
+3. `isBuy` 的判断不是单纯“存在会员记录”，而是“当前账号存在会员，且当前规则下不允许再新购”。判断逻辑如下：
    - 会员状态为已冻结、已停用时：视为已购，不可新购。
    - 会员状态为已失效时：允许新购。
    - 当前时间未超过 `validEnd` 时：不可新购。
    - 超过 `validEnd` 但仍在宽限期内时：是否允许新购取决于 `club_config.grace_action` 是否为“新开卡”。
    - 超过宽限期后：是否允许新购取决于 `club_config.post_grace_action` 是否为“新开卡”。
-3. `hasDiscount=true` 需同时满足以下条件：
+4. `hasDiscount=true` 需同时满足以下条件：
    - 存在启用中的折扣配置。
    - `discountQuota > useQuota`。
    - 折扣换算后小于原价，当前换算公式为 `discountRate / 10`。
 
 ## 失败码
 本接口当前无主动抛出的业务失败码；未命中数据时返回 `success=true, data=null`。
+
+# BUG（已完成）
+1. `benefitList.num` 返回值，现改为返回原始配置数量。已完成
+2. `benefitList.displayName` 字段，取值规则沿用原 `num` 的展示逻辑。已完成
