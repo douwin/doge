@@ -154,11 +154,6 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 }
 ```
 
-### 业务说明
-分页记录按 `benefitType asc, createTime desc, id desc` 排序返回。
-
----
-
 ## 2. 查询Club详情
 
 ### 接口信息
@@ -239,7 +234,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `memberNo` | String | 会员卡号 |
 | `validStart` | String | 有效期开始时间戳(毫秒) |
 | `validEnd` | String | 有效期结束时间戳(毫秒) |
-| `status` | Integer | 会员状态 |
+| `status` | Integer | 会员状态：`1=正常`，`2=已超期`，`3=已冻结`，`4=已停用`，`5=已失效` |
 | `statusName` | String | 会员状态名称 |
 
 ### 响应示例
@@ -339,7 +334,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `memberNo` | String | 会员号 |
 | `validStart` | String | 有效期开始时间戳(毫秒) |
 | `validEnd` | String | 有效期结束时间戳(毫秒) |
-| `status` | Integer | 会员状态码 |
+| `status` | Integer | 会员状态：`1=正常`，`2=已超期`，`3=已冻结`，`4=已停用`，`5=已失效` |
 | `statusName` | String | 会员状态名 |
 | `admissionFee` | String | 入会费 |
 | `annualFee` | String | 年费 |
@@ -353,11 +348,11 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `id` | String | 权益ID |
-| `benefitType` | Integer | 权益类型 |
+| `benefitType` | Integer | 权益类型：`1=ELON代币`，`2=高级权益票证`，`3=俱乐部积分`，`4=预测平台分红`，`5=矿池权益` |
 | `name` | String | 名称 |
 | `unit` | String | 单位 |
 | `num` | String | 数量 |
-| `status` | Integer | 状态 |
+| `status` | Integer | 状态：`1=待生效`，`2=已生效` |
 | `statusName` | String | 状态名称 |
 
 ### 响应示例
@@ -441,7 +436,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `id` | String | 权益ID |
-| `benefitType` | Integer | 权益类型 |
+| `benefitType` | Integer | 权益类型：`1=ELON代币`，`2=高级权益票证`，`3=俱乐部积分`，`4=预测平台分红`，`5=矿池权益` |
 | `benefitTypeName` | String | 权益类型名称 |
 | `elonInfo` | Object | ELON权益详情，仅 `benefitType=1` 返回 |
 | `voucherList` | Array | 票证列表，仅 `benefitType=2` 返回，其他类型返回空数组 |
@@ -460,7 +455,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|
 | `id` | String | 票证ID |
 | `voucherCode` | String | 票证码 |
-| `status` | Integer | 状态 |
+| `status` | Integer | 状态：`1=未核销`，`2=已核销`，`3=已失效` |
 | `statusName` | String | 状态名称 |
 
 `pointsInfo` 结构：
@@ -468,7 +463,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `totalPoints` | String | 总积分 |
-| `usedPoints` | String | 已核销 |
+| `usedPoints` | String | 已使用积分 |
 | `remainingPoints` | String | 剩余积分 |
 
 ### 响应示例
@@ -611,7 +606,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `memberNo` | String | 会员卡号 |
 | `validStart` | String | 有效期开始时间戳(毫秒) |
 | `validEnd` | String | 有效期结束时间戳(毫秒) |
-| `status` | Integer | 会员状态 |
+| `status` | Integer | 会员状态：`1=正常`，`2=已超期`，`3=已冻结`，`4=已停用`，`5=已失效` |
 | `statusName` | String | 会员状态名称 |
 
 ### 响应示例
@@ -675,11 +670,11 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `id` | String | 权益记录ID |
-| `benefitType` | Integer | 权益类型 |
+| `benefitType` | Integer | 权益类型：`1=ELON代币`，`2=高级权益票证`，`3=俱乐部积分`，`4=预测平台分红`，`5=矿池权益` |
 | `benefitTypeName` | String | 权益类型名称 |
 | `amount` | String | 数量 |
 | `unit` | String | 单位 |
-| `status` | Integer | 状态 |
+| `status` | Integer | 订单权益状态：`1=待发放`，`2=已发放` |
 | `statusName` | String | 状态名称 |
 | `createTime` | String | 创建时间戳(毫秒) |
 
@@ -746,7 +741,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `id` | String | 积分记录ID |
-| `sourceType` | Integer | 来源类型 |
+| `sourceType` | Integer | 来源类型：`1=Club入会`，`2=Club续费`，`3=线下核销` |
 | `sourceTypeName` | String | 来源类型名称 |
 | `beforePoints` | String | 变动前积分 |
 | `points` | String | 变动积分 |
@@ -771,7 +766,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
       {
         "id": "70001",
         "sourceType": 1,
-        "sourceTypeName": "Club购买",
+        "sourceTypeName": "Club入会",
         "beforePoints": "0",
         "points": "10000",
         "afterPoints": "10000",
@@ -799,8 +794,8 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|---|
 | `clubConfigId` | String | 是 | Club配置ID |
 | `memberId` | String | 是 | 会员ID |
-| `pageNo` | Integer | 否 | 页码，默认 `1` |
-| `pageSize` | Integer | 否 | 每页数量，默认 `10` |
+| `pageNo` | Integer | 否 | 页码，默认 `1`，继承自 `PageReq` |
+| `pageSize` | Integer | 否 | 每页数量，默认 `10`，继承自 `PageReq` |
 
 ### 请求示例
 ```http
@@ -816,7 +811,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|
 | `id` | String | 票证记录ID |
 | `voucherCode` | String | 票证码 |
-| `status` | Integer | 核销状态 |
+| `status` | Integer | 核销状态：`1=未核销`，`2=已核销`，`3=已失效` |
 | `statusName` | String | 核销状态名称 |
 | `createTime` | String | 创建时间戳(毫秒) |
 
@@ -837,7 +832,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
     "list": [
       {
         "id": "60001",
-        "voucherCode": "VIP-202607220001",
+        "voucherCode": "CV8K3M7Q2",
         "status": 1,
         "statusName": "未核销",
         "createTime": "1782864000000"
@@ -883,7 +878,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `amount` | String | 数量 |
 | `symbol` | String | 代币符号 |
 | `createTime` | String | 创建时间戳(毫秒) |
-| `status` | Integer | 状态 |
+| `status` | Integer | 订单权益状态：`1=待发放`，`2=已发放` |
 | `statusName` | String | 状态名称 |
 
 ### 响应示例
