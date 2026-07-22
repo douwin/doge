@@ -881,6 +881,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 |---|---|---|
 | `id` | String | 记录ID |
 | `amount` | String | 数量 |
+| `symbol` | String | 代币符号 |
 | `createTime` | String | 创建时间戳(毫秒) |
 | `status` | Integer | 状态 |
 | `statusName` | String | 状态名称 |
@@ -903,6 +904,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
       {
         "id": "70011",
         "amount": "100",
+        "symbol": "ELON",
         "createTime": "1782864000000",
         "status": 2,
         "statusName": "已发放"
