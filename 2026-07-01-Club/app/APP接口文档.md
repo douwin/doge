@@ -506,7 +506,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | Token | 必填 |
 
 ### 业务说明
-按当前价格购买 Club。接口内部会做当前账号的购买串行锁控制；成功后会落库会员、订单、订单权益、库存和账单，其中会员表会同步写入当前账号的 `accountNo`，订单和订单权益编号统一使用 `IdNoUtils.createOrderNo()` 生成。
+按当前价格购买 Club。接口内部会做当前账号的购买串行锁控制；成功后会落库会员、订单、订单权益、库存和账单，其中会员表会同步写入当前账号的 `accountNo`，订单和订单权益编号统一使用 `IdNoUtils.createOrderNo()` 生成。接口返回购买订单号和账单ID。
 
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
@@ -529,11 +529,12 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 ```
 
 ### 响应数据
-`data` 为 `Boolean`
+`data` 为 `ClubPurchaseRes`
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `data` | Boolean | 是否购买成功，成功返回 `true` |
+| `orderNo` | String | 购买订单号 |
+| `billId` | String | 钱包账单ID |
 
 ### 响应示例
 ```json
@@ -542,7 +543,10 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
   "ts": 1784592004123,
   "code": 200,
   "msg": "success",
-  "data": true
+  "data": {
+    "orderNo": "2026072201234567890",
+    "billId": "30001"
+  }
 }
 ```
 
@@ -560,7 +564,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 
 ### 业务说明
 按当前年费续费 Club。接口内部会校验安全密码，并做当前账号的续费串行锁控制。
-续费成功后会更新原会员信息；若历史会员数据缺失，会同步补齐 `accountNo`，并在 `validStart` 为空时按会员创建时间兜底。订单和订单权益编号统一使用 `IdNoUtils.createOrderNo()` 生成。
+续费成功后会更新原会员信息；若历史会员数据缺失，会同步补齐 `accountNo`，并在 `validStart` 为空时按会员创建时间兜底。订单和订单权益编号统一使用 `IdNoUtils.createOrderNo()` 生成，接口返回续费订单号和账单ID。
 
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
@@ -590,6 +594,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `orderNo` | String | 订单号 |
+| `billId` | String | 钱包账单ID |
 | `renewBeforeExpireDate` | String | 续费前到期时间戳(毫秒) |
 | `renewAfterExpireDate` | String | 续费后到期时间戳(毫秒) |
 | `createTime` | String | 成交时间戳(毫秒) |
@@ -618,6 +623,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
   "msg": "success",
   "data": {
     "orderNo": "CLUB20260722ABC123",
+    "billId": "30002",
     "renewBeforeExpireDate": "1814400000000",
     "renewAfterExpireDate": "1845936000000",
     "createTime": "1784592005000",
