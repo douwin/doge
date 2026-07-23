@@ -34,6 +34,12 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `isBuy` | Boolean | 是否已购买 |
 | `hasDiscount` | Boolean | 是否有可用优惠 |
 | `discountInfo` | Object | 折扣信息，无优惠时返回 `null` |
+| `isPreRenew` | Boolean | 是否进入提前续费窗口 |
+| `preRenewDays` | Integer | 提前续费天数 |
+| `preRenewDate` | String | 提前续费开始时间戳(毫秒) |
+| `isGracePeriod` | Boolean | 是否处于宽限期 |
+| `gracePeriodDays` | Integer | 宽限期天数 |
+| `gracePeriodDate` | String | 宽限期结束时间戳(毫秒) |
 | `memberInfo` | Object | 会员信息，未购买时返回 `null` |
 
 `benefitList` 元素结构：
@@ -62,6 +68,8 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `validStart` | String | 生效开始时间戳(毫秒) |
 | `validEnd` | String | 生效结束时间戳(毫秒) |
 | `createTime` | String | 开通时间戳(毫秒) |
+| `status` | Integer | 会员状态 |
+| `statusName` | String | 会员状态名称 |
 
 ## 响应示例
 ```json
@@ -95,12 +103,20 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
       "remainingQuota": "12",
       "discountRate": "8"
     },
+    "isPreRenew": false,
+    "preRenewDays": 7,
+    "preRenewDate": "1813795200000",
+    "isGracePeriod": false,
+    "gracePeriodDays": 15,
+    "gracePeriodDate": "1815696000000",
     "memberInfo": {
       "memberId": "20001",
       "memberNo": "DGC100001",
       "validStart": "1782864000000",
       "validEnd": "1814400000000",
-      "createTime": "1782864000000"
+      "createTime": "1782864000000",
+      "status": 1,
+      "statusName": "正常"
     }
   }
 }
@@ -115,7 +131,9 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 2. `benefitList.num` 返回原始配置数量，`benefitList.displayName` 返回带单位/文案的展示值。
 3. `isBuy` 表示“当前账号是否买过该 Club”，只要当前账号存在对应 `club_member` 记录，就返回 `true`；是否允许再次新购属于其他业务判断，不再混用到该字段中。
 4. `memberInfo` 与 `isBuy` 保持一致：只要存在会员记录就返回，不区分当前会员状态是否已失效。
-5. `hasDiscount=true` 需同时满足以下条件：
+5. 提前续费和宽限期字段只有存在会员记录时才会基于当前会员有效期计算；未购买时 `isPreRenew=false`、`isGracePeriod=false`，日期字段返回 `null`，天数字段返回配置值。
+6. `memberInfo.status/statusName` 取会员当前动态状态，规则与 Club详情接口一致。
+7. `hasDiscount=true` 需同时满足以下条件：
    - 存在启用中的折扣配置。
    - `discountQuota > useQuota`。
    - 折扣换算后小于原价，当前换算公式为 `discountRate / 10`。
@@ -128,3 +146,12 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 2. `benefitList.displayName` 字段，取值规则沿用原 `num` 的展示逻辑。已完成
 3. 购买后会员状态为已失效,为什么接口中返回的isBuy是false? 已完成
    - 当前实现已调整为：只要存在对应会员记录，`isBuy=true`，不再使用“是否允许再次新购”来判断是否买过。已完成
+4. 响应增加字段。已完成
+   - gracePeriodDate 宽限期结束时间
+   - gracePeriodDays 宽限期天数
+   - isGracePeriod 是否处于宽限期
+   - preRenewDate 提前续费开始时间
+   - preRenewDays 提前续费天数
+   - isPreRenew 是否进入提前续费窗口
+   - memberInfo中增加status和statusName字段。已完成
+   - 当前实现已补充上述字段，计算口径与 Club详情接口保持一致。已完成

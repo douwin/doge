@@ -154,20 +154,21 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 3. `purchaseAvailable` 当前有两种明确的不可购买原因：
    - 当前账号已有一张按规则不可再次新购的会员卡，返回 `false`，原因固定为 `一人一份`。
    - `club_config.used_quota >= club_config.max_quota`，返回 `false`，原因固定为 `当前Club已售罄`。
-4. `isBuy` 的判断规则与“查询已启用的Club”一致，不是简单判断是否存在会员记录。
-5. `isPreRenew` 计算逻辑：
+4. `isBuy` 表示“当前账号是否购买过该 Club”，只要当前账号存在对应 `club_member` 记录，就返回 `true`；是否允许再次新购属于 `purchaseAvailable` 的判断范围。
+5. `memberInfo` 与 `isBuy` 保持一致：只要存在会员记录就返回，不区分当前会员状态是否已失效。
+6. `isPreRenew` 计算逻辑：
    - 仅在当前账号已购且 `validEnd` 不为空时计算。
    - `preRenewDate = validEnd - preRenewDays`。
    - 当 `当前时间 >= preRenewDate` 且 `当前时间 <= validEnd` 时返回 `true`。
-6. `isGracePeriod` 计算逻辑：
+7. `isGracePeriod` 计算逻辑：
    - 仅在当前账号已购且 `validEnd` 不为空时计算。
    - `gracePeriodDate = validEnd + gracePeriodDays`。
    - 当 `当前时间 > validEnd` 且 `当前时间 <= gracePeriodDate` 时返回 `true`。
-7. 折扣相关规则：
+8. 折扣相关规则：
    - 折扣换算公式：`discountRate / 10`，例如 `8` 表示 `8折`。
    - `hasDiscount=true` 需满足存在启用折扣、优惠名额未用尽、并且优惠价小于原价。
    - 当前实现中 `discountFee` 只要存在启用折扣配置就会按折扣值计算；前端如需判断是否展示优惠，应以 `hasDiscount` 为准。
-8. `balance` 仅在已登录且能查询到支付币种资产时返回实际余额，否则返回 `0`。
+9. `balance` 仅在已登录且能查询到支付币种资产时返回实际余额，否则返回 `0`。
 
 ## 失败码
 | 错误码 | 说明 |
@@ -178,4 +179,4 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 # BUG（已完成）
 1. `benefitList.num` 返回值，现改为返回原始配置数量。已完成
 2. `benefitList.displayName` 字段，取值规则沿用原 `num` 的展示逻辑。已完成
-
+3. 

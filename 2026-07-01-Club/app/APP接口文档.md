@@ -82,6 +82,12 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `isBuy` | Boolean | 是否已购买 |
 | `hasDiscount` | Boolean | 是否有优惠 |
 | `discountInfo` | Object | 折扣信息，无优惠时返回 `null` |
+| `isPreRenew` | Boolean | 是否进入提前续费窗口 |
+| `preRenewDays` | Integer | 提前续费天数 |
+| `preRenewDate` | String | 提前续费开始时间戳(毫秒) |
+| `isGracePeriod` | Boolean | 是否处于宽限期 |
+| `gracePeriodDays` | Integer | 宽限期天数 |
+| `gracePeriodDate` | String | 宽限期结束时间戳(毫秒) |
 | `memberInfo` | Object | 会员信息，未购买时返回 `null` |
 
 `benefitList` 元素结构：
@@ -110,6 +116,8 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `validStart` | String | 有效期开始时间戳(毫秒) |
 | `validEnd` | String | 有效期结束时间戳(毫秒) |
 | `createTime` | String | 开通日期时间戳(毫秒) |
+| `status` | Integer | 会员状态 |
+| `statusName` | String | 会员状态名称 |
 
 ### 响应示例
 ```json
@@ -143,12 +151,20 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
       "remainingQuota": "12",
       "discountRate": "8"
     },
+    "isPreRenew": false,
+    "preRenewDays": 7,
+    "preRenewDate": "1813795200000",
+    "isGracePeriod": false,
+    "gracePeriodDays": 15,
+    "gracePeriodDate": "1815696000000",
     "memberInfo": {
       "memberId": "20001",
       "memberNo": "DGC100001",
       "validStart": "1782864000000",
       "validEnd": "1814400000000",
-      "createTime": "1782864000000"
+      "createTime": "1782864000000",
+      "status": 1,
+      "statusName": "正常"
     }
   }
 }
@@ -165,7 +181,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | Token | 选填 |
 
 ### 业务说明
-返回 Club 商品信息、优惠信息、余额信息、购买状态和会员状态。未登录时 `balance=0`、`isBuy=false`、`memberInfo=null`。
+返回 Club 商品信息、优惠信息、余额信息、购买状态和会员状态。未登录时 `balance=0`、`isBuy=false`、`memberInfo=null`。已登录且存在该 Club 的会员记录时，无论当前会员是否已失效，`isBuy=true` 且返回 `memberInfo`。
 
 ### 请求参数
 | 字段 | 类型 | 是否必填 | 说明 |
