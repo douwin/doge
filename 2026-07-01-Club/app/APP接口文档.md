@@ -232,6 +232,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `unit` | String | 单位 |
 | `num` | String | 原始数量，取 `club_config_benefit.config_num` |
 | `displayName` | String | 展示文案，按权益类型格式化后的数量 |
+| `description` | String | 权益描述 |
 | `remark` | String | 权益备注 |
 
 `discountInfo` 结构：
@@ -270,6 +271,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
         "unit": "ELON",
         "num": "10000",
         "displayName": "10000 ELON",
+        "description": "支付成功后发放",
         "remark": "支付成功后发放"
       },
       {
@@ -277,6 +279,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
         "unit": "张",
         "num": "1",
         "displayName": "1 张高级权益票证",
+        "description": "具体使用规则以通知为准",
         "remark": "具体活动规则以通知为准"
       }
     ],

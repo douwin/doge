@@ -60,6 +60,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `unit` | String | 单位 |
 | `num` | String | 原始数量，取 `club_config_benefit.config_num` |
 | `displayName` | String | 展示文案，按权益类型格式化后的数量 |
+| `description` | String | 权益描述，取 `ClubBenefitTypeEnum` 的国际化描述 |
 | `remark` | String | 权益备注 |
 
 `discountInfo` 结构：
@@ -98,6 +99,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
         "unit": "ELON",
         "num": "10000",
         "displayName": "10000 ELON",
+        "description": "支付成功后发放",
         "remark": "支付成功后发放"
       },
       {
@@ -105,6 +107,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
         "unit": "张",
         "num": "1",
         "displayName": "1 张高级权益票证",
+        "description": "具体使用规则以通知为准",
         "remark": "具体活动规则以通知为准"
       }
     ],
@@ -179,4 +182,5 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 # BUG（已完成）
 1. `benefitList.num` 返回值，现改为返回原始配置数量。已完成
 2. `benefitList.displayName` 字段，取值规则沿用原 `num` 的展示逻辑。已完成
-3. 
+3. benefitList增加description字段。已完成
+   - 当前实现已新增 `benefitList.description`，并统一取 `ClubBenefitTypeEnum` 的国际化描述。已完成
