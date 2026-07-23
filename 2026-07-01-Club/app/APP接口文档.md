@@ -58,7 +58,7 @@
 | Token | 选填 |
 
 ### 业务说明
-当前仅返回一个已启用的 Club 对象。未登录时 `isBuy=false`、`memberInfo=null`。有优惠时返回 `hasDiscount=true` 且携带 `discountInfo`。
+当前仅返回一个已启用的 Club 对象。未登录时 `isBuy=false`、`memberInfo=null`。已登录且存在该 Club 的会员记录时，无论当前会员是否已失效，`isBuy=true` 且返回 `memberInfo`。有优惠时返回 `hasDiscount=true` 且携带 `discountInfo`。
 
 ### 请求参数
 无
@@ -743,6 +743,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `id` | String | 积分记录ID |
 | `sourceType` | Integer | 来源类型：`1=Club入会`，`2=Club续费`，`3=线下核销` |
 | `sourceTypeName` | String | 来源类型名称 |
+| `direction` | Integer | 方向：`1=收入`，`2=支出` |
 | `beforePoints` | String | 变动前积分 |
 | `points` | String | 变动积分 |
 | `afterPoints` | String | 变动后积分 |
@@ -767,6 +768,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
         "id": "70001",
         "sourceType": 1,
         "sourceTypeName": "Club入会",
+        "direction": 1,
         "beforePoints": "0",
         "points": "10000",
         "afterPoints": "10000",
@@ -813,6 +815,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 | `voucherCode` | String | 票证码 |
 | `status` | Integer | 核销状态：`1=未核销`，`2=已核销`，`3=已失效` |
 | `statusName` | String | 核销状态名称 |
+| `expireTime` | String | 有效期时间戳(毫秒)，取会员 `validEnd` 当天 `23:59:59.999` |
 | `createTime` | String | 创建时间戳(毫秒) |
 
 ### 响应示例
@@ -835,6 +838,7 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
         "voucherCode": "CV8K3M7Q2",
         "status": 1,
         "statusName": "未核销",
+        "expireTime": "1814486399999",
         "createTime": "1782864000000"
       }
     ]

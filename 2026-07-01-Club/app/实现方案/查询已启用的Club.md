@@ -113,13 +113,9 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 ## 复杂业务说明
 1. `benefitList` 数据来源于 `club_config_benefit`，当前实现不再按 `status` 过滤，排序规则为 `benefitType asc, id asc`。
 2. `benefitList.num` 返回原始配置数量，`benefitList.displayName` 返回带单位/文案的展示值。
-3. `isBuy` 的判断不是单纯“存在会员记录”，而是“当前账号存在会员，且当前规则下不允许再新购”。判断逻辑如下：
-   - 会员状态为已冻结、已停用时：视为已购，不可新购。
-   - 会员状态为已失效时：允许新购。
-   - 当前时间未超过 `validEnd` 时：不可新购。
-   - 超过 `validEnd` 但仍在宽限期内时：是否允许新购取决于 `club_config.grace_action` 是否为“新开卡”。
-   - 超过宽限期后：是否允许新购取决于 `club_config.post_grace_action` 是否为“新开卡”。
-4. `hasDiscount=true` 需同时满足以下条件：
+3. `isBuy` 表示“当前账号是否买过该 Club”，只要当前账号存在对应 `club_member` 记录，就返回 `true`；是否允许再次新购属于其他业务判断，不再混用到该字段中。
+4. `memberInfo` 与 `isBuy` 保持一致：只要存在会员记录就返回，不区分当前会员状态是否已失效。
+5. `hasDiscount=true` 需同时满足以下条件：
    - 存在启用中的折扣配置。
    - `discountQuota > useQuota`。
    - 折扣换算后小于原价，当前换算公式为 `discountRate / 10`。
@@ -130,3 +126,5 @@ Token: eyJhbGciOiJIUzI1NiJ9.demo
 # BUG（已完成）
 1. `benefitList.num` 返回值，现改为返回原始配置数量。已完成
 2. `benefitList.displayName` 字段，取值规则沿用原 `num` 的展示逻辑。已完成
+3. 购买后会员状态为已失效,为什么接口中返回的isBuy是false? 已完成
+   - 当前实现已调整为：只要存在对应会员记录，`isBuy=true`，不再使用“是否允许再次新购”来判断是否买过。已完成
